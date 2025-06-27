@@ -5,9 +5,9 @@
 #include "serial_control.h"
 
 // 创建设备实例
-ServoAngle servo1(SERVO1_PIN, 0);
-ServoAngle servo2(SERVO2_PIN, 1);
-StepperMotor motor;
+ServoAngle servo1(SERVO1_PIN, 0); // 1号舵机
+ServoAngle servo2(SERVO2_PIN, 1); // 2号舵机
+StepperMotor motor;               // 步进电机
 
 // 创建串口控制器
 SerialControl controller(servo1, servo2, motor);

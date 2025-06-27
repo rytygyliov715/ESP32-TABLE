@@ -9,6 +9,7 @@ private:
     uint8_t channel;
     uint8_t pin;
     bool initialized = false;
+    int currentAngle; // 当前角度
 
     void ensureInitialized()
     {
@@ -31,7 +32,10 @@ public:
         angle = constrain(angle, 0, 180);
         uint32_t duty = map(angle, 0, 180, 163, 819); // 500-2400μs对应值
         ledcWrite(channel, duty);
+        currentAngle = angle; // 更新当前角度
     }
+
+    int getAngle() const { return currentAngle; }
 
     void resetToZero()
     {
