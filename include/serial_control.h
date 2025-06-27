@@ -4,6 +4,8 @@
 #include "servo_angle.h"
 #include "stepper_motor.h"
 
+#include "pins.h"
+
 class SerialControl
 {
 private:
@@ -12,6 +14,7 @@ private:
     StepperMotor &motor;
     bool motorHomed = false;
 
+public:
     // 舵机控制
     void controlServo(uint8_t cmd)
     {
@@ -88,10 +91,6 @@ private:
         }
     }
 
-    // 确保舵机已初始化
-    // 如果未初始化，则自动执行初始化操作
-public:
-    // 构造函数
     SerialControl(ServoAngle &s1, ServoAngle &s2, StepperMotor &m)
         : servo1(s1), servo2(s2), motor(m) {}
 
@@ -100,7 +99,10 @@ public:
     // 等待串口连接完成
     void begin()
     {
+        // 初始化串口0
         Serial.begin(115200);
+        // 初始化串口2
+        Serial2.begin(115200, SERIAL_8N1, ASRPRO_RX_PIN, ASRPRO_TX_PIN);
         while (!Serial)
             ;
         Serial.println("Integrated Control System Ready");
@@ -128,11 +130,11 @@ public:
     // 检查串口是否有可用数据
     void update()
     {
-        if (Serial.available() > 0)
+        if (Serial2.available() > 0)
         {
-            int cmd = Serial.parseInt();
-            while (Serial.available() > 0)
-                Serial.read();
+            int cmd = Serial2.parseInt();
+            while (Serial2.available() > 0)
+                Serial2.read();
 
             if (cmd >= 10 && cmd <= 13)
             {
