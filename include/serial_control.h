@@ -3,7 +3,8 @@
 #include <Arduino.h>
 #include "servo_angle.h"
 #include "stepper_motor.h"
-
+#include "oled.h" // 注意包含方式：双引号 + 正确文件路径
+#include <Wire.h>
 #include "pins.h"
 
 class SerialControl
@@ -24,21 +25,25 @@ public:
             servo1.setAngle(0);
             servo2.setAngle(0);
             Serial.println("Servos: 0°");
+            updateServoDisplay(0); // 更新OLED显示
             break;
         case 11:
             servo1.setAngle(30);
             servo2.setAngle(30);
             Serial.println("Servos: 30°");
+            updateServoDisplay(30); // 更新OLED显示
             break;
         case 12:
             servo1.setAngle(60);
             servo2.setAngle(60);
             Serial.println("Servos: 60°");
+            updateServoDisplay(60); // 更新OLED显示
             break;
         case 13:
             servo1.setAngle(90);
             servo2.setAngle(90);
             Serial.println("Servos: 90°");
+            updateServoDisplay(90); // 更新OLED显示
             break;
         }
     }
@@ -56,6 +61,7 @@ public:
                 motor.rotateAngle(5);    // 小角度调整
                 motorHomed = true;
                 Serial.println("Motor homed");
+                updateStepperDisplay(0); // 更新OLED显示
             }
             break;
 
@@ -63,18 +69,21 @@ public:
             ensureHomed();
             motor.rotateAngle(1080);
             Serial.println("Motor at 3 turns");
+            updateStepperDisplay(3); // 更新OLED显示
             break;
 
         case 22: // 第6圈 (2160°)
             ensureHomed();
             motor.rotateAngle(2160);
             Serial.println("Motor at 6 turns");
+            updateStepperDisplay(6); // 更新OLED显示
             break;
 
         case 23: // 第9圈 (3240°)
             ensureHomed();
             motor.rotateAngle(3240);
             Serial.println("Motor at 9 turns");
+            updateStepperDisplay(9); // 更新OLED显示
             break;
         }
     }
