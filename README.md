@@ -271,3 +271,14 @@ Height:Low/medium/high
 3. DHT11 温湿度传感器获取温度和湿度，并返回
 
 保留get函数
+
+
+在OLED2上显示传感器相关数据，格式如下：
+OLED2
+--------------------
+Sensors-DATA
+DATA: 2023/03/15 12:30:45
+Distance: 100 cm
+Temp: 25 *C
+Hum: 60 %
+---------------------

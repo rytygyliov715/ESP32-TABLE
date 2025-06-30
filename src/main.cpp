@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "oled.h"
 #include "sensors.h"
 
 void setup()
@@ -10,34 +11,15 @@ void setup()
   initHCSR04();
   initDHT11();
 
-  Serial.println("Sensor initialization completed!");
+  // 初始化OLED
+  init_OLED1();
+  init_OLED2();
 }
 
 void loop()
 {
-  // 获取并打印时间
-  String timeStr = getCurrentTimeString();
-  Serial.print("Time: ");
-  Serial.println(timeStr);
+  // 更新OLED2上的传感器数据
+  updateOLED2WithSensors();
 
-  // 获取并打印超声波距离
-  long distance = getDistanceCM();
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-
-  // 获取并打印温湿度
-  float temp = getTemperature();
-  float humi = getHumidity();
-
-  Serial.print("Temperature: ");
-  Serial.print(temp);
-  Serial.println(" C");
-
-  Serial.print("Humidity: ");
-  Serial.print(humi);
-  Serial.println(" %");
-
-  Serial.println("-----------------------");
-  delay(1000); // 每秒更新一次
+  delay(1000); // 每1秒刷新一次
 }

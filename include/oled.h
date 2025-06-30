@@ -5,6 +5,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "pins.h"
+#include "sensors.h" // 确保包含传感器头文件
 
 // OLED 显示屏宽度和高度
 #define SCREEN_WIDTH 128
@@ -48,23 +49,14 @@ String getHeightLevel(int turns)
         return "Unknown";
 }
 
-// 初始化 OLED 显示屏
-void init_OLEDs()
+// 初始化 OLED1 显示屏
+void init_OLED1()
 {
     I2C_OLED1.begin(OLED1_SDA_PIN, OLED1_SCL_PIN, 400000);
-    I2C_OLED2.begin(OLED2_SDA_PIN, OLED2_SCL_PIN, 400000);
-
     if (!display1.begin(SSD1306_SWITCHCAPVCC, 0x3C))
     {
-        Serial.println(F("OLED1 初始化失败"));
+        Serial.println(F("OLED1 Init failed"));
     }
-
-    if (!display2.begin(SSD1306_SWITCHCAPVCC, 0x3C))
-    {
-        Serial.println(F("OLED2 初始化失败"));
-    }
-
-    // 初始内容
     display1.clearDisplay();
     display1.setTextSize(1);
     display1.setTextColor(SSD1306_WHITE);
@@ -73,7 +65,16 @@ void init_OLEDs()
     display1.println("Angle: Unknown");
     display1.println("Height: Unknown");
     display1.display();
+}
 
+// 初始化 OLED2 显示屏
+void init_OLED2()
+{
+    I2C_OLED2.begin(OLED2_SDA_PIN, OLED2_SCL_PIN, 400000);
+    if (!display2.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+    {
+        Serial.println(F("OLED2 Init failed"));
+    }
     display2.clearDisplay();
     display2.setTextSize(1);
     display2.setTextColor(SSD1306_WHITE);
@@ -113,6 +114,36 @@ void updateStepperDisplay(int turns)
     display1.print("Height: ");
     display1.println(currentHeightLevel);
     display1.display();
+}
+
+// 在OLED2上显示传感器数据
+void updateOLED2WithSensors()
+{
+    String timeStr = getCurrentTimeString();
+    long distance = getDistanceCM();
+    float temp = getTemperature();
+    float hum = getHumidity();
+
+    display2.clearDisplay();
+    display2.setTextSize(1);
+    display2.setTextColor(SSD1306_WHITE);
+    display2.setCursor(0, 0);
+    display2.println("OLED2");
+    display2.println("--------------------");
+    display2.println("Sensors-DATA");
+    display2.print("DATA: ");
+    display2.println(timeStr);
+    display2.print("Distance: ");
+    display2.print(distance);
+    display2.println(" cm");
+    display2.print("Temp: ");
+    display2.print(temp, 1);
+    display2.println(" *C");
+    display2.print("Hum: ");
+    display2.print(hum, 0);
+    display2.println(" %");
+    display2.println("--------------------");
+    display2.display();
 }
 
 #endif // OLED_H
