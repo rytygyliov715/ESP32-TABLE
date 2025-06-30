@@ -40,3 +40,37 @@ TABLE-state
 Angle:Low/medium/high
 Height:Low/medium/high
 ---------------------
+
+
+
+我在使用vsc的PIO插件开发ESP32-S3,下面是我的项目的的PINS.H的播放内容：
+```h
+// ===== I2C OLED 显示屏 =====
+#define OLED1_SCL_PIN 8  // I2C1 时钟
+#define OLED1_SDA_PIN 9  // I2C1 数据
+#define OLED2_SCL_PIN 10 // I2C2 时钟
+#define OLED2_SDA_PIN 11 // I2C2 数据
+```
+
+还有的是我的平台IO的配置文件platformio.ini的内容：
+```ini
+[platformio]
+index-url = http://mirrors.aliyun.com/pypi/simple/
+trusted-host = mirrors.aliyun.com
+
+[env:esp32dev]
+platform = espressif32
+board = esp32-s3-devkitc-1
+framework = arduino
+
+monitor_speed = 115200
+
+lib_deps =
+    adafruit/Adafruit GFX Library
+    adafruit/Adafruit SSD1306
+
+```
+
+现在，帮我编写一个OLED.H的文件，实现对OLED显示屏的初始化和基本操作功能。在两个屏幕分别显示不同的内容。
+OLED1显示：HELLO WORLD , THIS IS OLED1
+OLED2显示：WELCOME TO OLED2
