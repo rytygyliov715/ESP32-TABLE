@@ -1,31 +1,43 @@
 #include <Arduino.h>
-#include "pins.h"
-#include "servo_angle.h"
-#include "stepper_motor.h"
-#include "serial_control.h"
-#include "oled.h" // 注意包含方式：双引号 + 正确文件路径
-
-// 创建设备实例
-ServoAngle servo1(SERVO1_PIN, 0); // 1号舵机
-ServoAngle servo2(SERVO2_PIN, 1); // 2号舵机
-StepperMotor motor;               // 步进电机
-
-// 创建串口控制器
-SerialControl controller(servo1, servo2, motor);
+#include "sensors.h"
 
 void setup()
 {
-  controller.begin(); // 初始化串口控制器
-  // 初始化设备
-  servo1.resetToZero();
-  servo2.resetToZero();
-  motor.begin();
-  motor.setSpeed(3); // 设置步进电机速度
+  Serial.begin(115200);
 
-  init_OLEDs(); // 初始化 OLED 屏幕
+  // 初始化各个传感器模块
+  initDS1302();
+  initHCSR04();
+  initDHT11();
+
+  Serial.println("Sensor initialization completed!");
 }
 
 void loop()
 {
-  controller.update();
+  // 获取并打印时间
+  String timeStr = getCurrentTimeString();
+  Serial.print("Time: ");
+  Serial.println(timeStr);
+
+  // 获取并打印超声波距离
+  long distance = getDistanceCM();
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // 获取并打印温湿度
+  float temp = getTemperature();
+  float humi = getHumidity();
+
+  Serial.print("Temperature: ");
+  Serial.print(temp);
+  Serial.println(" C");
+
+  Serial.print("Humidity: ");
+  Serial.print(humi);
+  Serial.println(" %");
+
+  Serial.println("-----------------------");
+  delay(1000); // 每秒更新一次
 }
