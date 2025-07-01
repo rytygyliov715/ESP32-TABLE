@@ -15317,6 +15317,36 @@
       "originalText": "调整步进电机角度\n=0",
       "autoResize": true,
       "lineHeight": 1.25
+    },
+    {
+      "id": "L8i6_paIIi07Q1uwPsE3Q",
+      "type": "rectangle",
+      "x": 5146.122775911467,
+      "y": -0.4615846858948771,
+      "width": 594.600036621094,
+      "height": 638.7998962402344,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "bv7",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1724417439,
+      "version": 135,
+      "versionNonce": 785881553,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1751269005047,
+      "link": null,
+      "locked": false
     }
   ],
   "appState": {

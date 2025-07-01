@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能课桌控制系统</title>
+    <style>
+        :root {
+            --primary-color: #4285F4;
+            --secondary-color: #34A853;
+            --warning-color: #FBBC05;
+            --danger-color: #EA4335;
+            --dark-color: #202124;
+            --light-color: #f8f9fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--dark-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .card h2 i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .sensor-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .sensor-label {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .sensor-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .sensor-value.warning {
+            color: var(--warning-color);
+        }
+
+        .sensor-value.danger {
+            color: var(--danger-color);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+        }
+
+        .btn.active {
+            box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
+        }
+
+        .btn:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .tomato-clock {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .clock-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            margin: 15px 0;
+        }
+
+        .clock-progress {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .clock-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="material-icons">desktop_windows</i> 智能课桌控制系统</h1>
+            <p>ESP32 物联网控制平台</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2><i class="material-icons">thermostat</i> 环境监测</h2>
+                <div class="sensor-data">
+                    <span class="sensor-label">温度:</span>
+                    <span class="sensor-value" id="temperature">-- °C</span>
+                </div>
+                <div class="sensor-data">
+                    <span class="sensor-label">湿度:</span>
+                    <span class="sensor-value" id="humidity">-- %</span>
+                </div>
+                <div class="sensor-data">
+                    <span class="sensor-label">距离:</span>
+                    <span class="sensor-value" id="distance">-- cm</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="material-icons">schedule</i> 实时时钟</h2>
+                <div class="sensor-data">
+                    <span class="sensor-label">日期:</span>
+                    <span class="sensor-value" id="date">--</span>
+                </div>
+                <div class="sensor-data">
+                    <span class="sensor-label">时间:</span>
+                    <span class="sensor-value" id="time">--</span>
+                </div>
+
+                <div class="tomato-clock">
+                    <h3>番茄时钟</h3>
+                    <div class="clock-display" id="tomato-time">25:00</div>
+                    <div class="clock-progress">
+                        <div class="progress-bar" id="tomato-progress"></div>
+                    </div>
+                    <div class="clock-controls">
+                        <button id="start-tomato" class="btn btn-primary">开始</button>
+                        <button id="pause-tomato" class="btn btn-warning" disabled>暂停</button>
+                        <button id="reset-tomato" class="btn btn-secondary">重置</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="material-icons">settings</i> 桌面控制</h2>
+                <div class="control-group">
+                    <h3>桌面高度</h3>
+                    <div class="btn-group">
+                        <button id="height-zero" class="btn btn-primary active">零位</button>
+                        <button id="height-low" class="btn btn-secondary">低位</button>
+                        <button id="height-mid" class="btn btn-warning">中位</button>
+                        <button id="height-high" class="btn btn-danger">高位</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>桌面角度</h3>
+                    <div class="btn-group">
+                        <button id="angle-zero" class="btn btn-primary active">0°</button>
+                        <button id="angle-30" class="btn btn-secondary">30°</button>
+                        <button id="angle-60" class="btn btn-warning">60°</button>
+                        <button id="angle-90" class="btn btn-danger">90°</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        操作已成功执行!
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const temperatureEl = document.getElementById('temperature');
+        const humidityEl = document.getElementById('humidity');
+        const distanceEl = document.getElementById('distance');
+        const dateEl = document.getElementById('date');
+        const timeEl = document.getElementById('time');
+        const notification = document.getElementById('notification');
+
+        // 番茄时钟元素
+        const tomatoTimeEl = document.getElementById('tomato-time');
+        const tomatoProgressEl = document.getElementById('tomato-progress');
+        const startTomatoBtn = document.getElementById('start-tomato');
+        const pauseTomatoBtn = document.getElementById('pause-tomato');
+        const resetTomatoBtn = document.getElementById('reset-tomato');
+
+        // 高度控制按钮
+        const heightBtns = {
+            zero: document.getElementById('height-zero'),
+            low: document.getElementById('height-low'),
+            mid: document.getElementById('height-mid'),
+            high: document.getElementById('height-high')
+        };
+
+        // 角度控制按钮
+        const angleBtns = {
+            zero: document.getElementById('angle-zero'),
+            thirty: document.getElementById('angle-30'),
+            sixty: document.getElementById('angle-60'),
+            ninety: document.getElementById('angle-90')
+        };
+
+        // 番茄时钟变量
+        let tomatoInterval;
+        let tomatoSeconds = 25 * 60; // 25分钟
+        let isTomatoRunning = false;
+
+        // 显示通知
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.classList.toggle('error', isError);
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 更新传感器数据 (模拟)
+        function updateSensorData() {
+            // 模拟温湿度数据
+            const temp = (25 + Math.random() * 5).toFixed(1);
+            const hum = (50 + Math.random() * 10).toFixed(1);
+            temperatureEl.textContent = `${temp} °C`;
+            humidityEl.textContent = `${hum} %`;
+
+            // 模拟距离数据
+            const dist = (30 + Math.random() * 20).toFixed(1);
+            distanceEl.textContent = `${dist} cm`;
+
+            // 更新RTC时间
+            updateClock();
+        }
+
+        // 更新时钟
+        function updateClock() {
+            const now = new Date();
+            dateEl.textContent = now.toLocaleDateString('zh-CN');
+            timeEl.textContent = now.toLocaleTimeString('zh-CN');
+        }
+
+        // 更新番茄时钟显示
+        function updateTomatoDisplay() {
+            const minutes = Math.floor(tomatoSeconds / 60);
+            const seconds = tomatoSeconds % 60;
+            tomatoTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // 更新进度条
+            const progress = ((25 * 60 - tomatoSeconds) / (25 * 60)) * 100;
+            tomatoProgressEl.style.width = `${progress}%`;
+
+            // 颜色变化
+            const rootStyle = getComputedStyle(document.documentElement);
+            if (tomatoSeconds < 60) {
+                tomatoTimeEl.style.color = rootStyle.getPropertyValue('--danger-color');
+                tomatoProgressEl.style.backgroundColor = rootStyle.getPropertyValue('--danger-color');
+            } else if (tomatoSeconds < 5 * 60) {
+                tomatoTimeEl.style.color = rootStyle.getPropertyValue('--warning-color');
+                tomatoProgressEl.style.backgroundColor = rootStyle.getPropertyValue('--warning-color');
+            } else {
+                tomatoTimeEl.style.color = rootStyle.getPropertyValue('--primary-color');
+                tomatoProgressEl.style.backgroundColor = rootStyle.getPropertyValue('--primary-color');
+            }
+        }
+
+        // 番茄时钟计时器
+        function startTomatoTimer() {
+            if (isTomatoRunning) return;
+
+            isTomatoRunning = true;
+            startTomatoBtn.disabled = true;
+            pauseTomatoBtn.disabled = false;
+
+            tomatoInterval = setInterval(() => {
+                tomatoSeconds--;
+                updateTomatoDisplay();
+
+                if (tomatoSeconds <= 0) {
+                    clearInterval(tomatoInterval);
+                    isTomatoRunning = false;
+                    showNotification('番茄时间到！休息一下吧！');
+                    startTomatoBtn.disabled = true;
+                    pauseTomatoBtn.disabled = true;
+                }
+            }, 1000);
+        }
+
+        // 暂停番茄时钟
+        function pauseTomatoTimer() {
+            clearInterval(tomatoInterval);
+            isTomatoRunning = false;
+            startTomatoBtn.disabled = false;
+            pauseTomatoBtn.disabled = true;
+        }
+
+        // 重置番茄时钟
+        function resetTomatoTimer() {
+            pauseTomatoTimer();
+            tomatoSeconds = 25 * 60;
+            updateTomatoDisplay();
+            startTomatoBtn.disabled = false;
+        }
+
+        // 高度控制按钮事件
+        Object.entries(heightBtns).forEach(([key, btn]) => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                Object.values(heightBtns).forEach(b => b.classList.remove('active'));
+                // 给当前按钮添加active类
+                btn.classList.add('active');
+
+                showNotification(`桌面高度已设置为${btn.textContent}`);
+            });
+        });
+
+        // 角度控制按钮事件
+        Object.entries(angleBtns).forEach(([key, btn]) => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                Object.values(angleBtns).forEach(b => b.classList.remove('active'));
+                // 给当前按钮添加active类
+                btn.classList.add('active');
+
+                showNotification(`桌面角度已设置为${btn.textContent}`);
+            });
+        });
+
+        // 番茄时钟控制
+        startTomatoBtn.addEventListener('click', startTomatoTimer);
+        pauseTomatoBtn.addEventListener('click', pauseTomatoTimer);
+        resetTomatoBtn.addEventListener('click', resetTomatoTimer);
+
+        // 初始化
+        updateSensorData();
+        updateTomatoDisplay();
+        setInterval(updateSensorData, 5000); // 每5秒更新一次传感器数据
+        setInterval(updateClock, 1000); // 每秒更新一次时钟
+
+        // 设置初始状态
+        heightBtns.zero.click();
+        angleBtns.zero.click();
+    </script>
+</body>
+
+</html>
