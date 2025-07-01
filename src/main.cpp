@@ -5,13 +5,14 @@
 #include "servo_angle.h"
 #include "stepper_motor.h"
 #include "serial_control.h"
+#include "web.h"
 
 // 创建设备实例
 ServoAngle servo1(SERVO1_PIN, 0); // 1号舵机
 ServoAngle servo2(SERVO2_PIN, 1); // 2号舵机
 StepperMotor motor;               // 步进电机
 
-// 创建串口控制器
+// 创建控制器实例
 SerialControl controller(servo1, servo2, motor);
 
 void setup()
@@ -34,6 +35,8 @@ void setup()
   // 初始化OLED
   init_OLED1();
   init_OLED2();
+
+  initWebServer(); // 初始化Web服务器
 }
 
 void loop()
@@ -41,5 +44,6 @@ void loop()
   // 更新OLED2上的传感器数据
   updateOLED2WithSensors();
   controller.update();
-  delay(1000); // 每1秒刷新一次
+  handleWebClient(); // 处理客户端请求
+  delay(1000);       // 每1秒刷新一次
 }
