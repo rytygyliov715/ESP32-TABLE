@@ -45,5 +45,6 @@ void loop()
   updateOLED2WithSensors();
   controller.update();
   handleWebClient(); // 处理客户端请求
-  delay(1000);       // 每1秒刷新一次
+
+  delay(100); // 每0.1秒刷新一次
 }
