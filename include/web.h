@@ -30,8 +30,8 @@ void handleRoot()
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智能课桌控制系统</title>
     <style>
-        /* 保留原有样式 */
-        @import url('https://fonts.googleapis.com/css2?family=HarmonyOS+Sans&display=swap');
+         @import url('https://fonts.googleapis.com/css2?family=HarmonyOS+Sans&display=swap');
+
         :root {
             --harmony-primary: #007DFF;
             --harmony-success: #00C292;
@@ -43,7 +43,195 @@ void handleRoot()
             --radius: 16px;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
-        /* 保留其他样式... */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'HarmonyOS Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--harmony-bg);
+            color: var(--harmony-dark);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--harmony-primary);
+            color: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: var(--harmony-light);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.015);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--harmony-dark);
+            display: flex;
+            align-items: center;
+        }
+
+        .card h2 i {
+            margin-right: 10px;
+        }
+
+        .sensor-data {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .sensor-label {
+            color: #888;
+        }
+
+        .sensor-value {
+            font-weight: bold;
+            color: var(--harmony-primary);
+        }
+
+        .sensor-value.warning {
+            color: var(--harmony-warning);
+        }
+
+        .sensor-value.danger {
+            color: var(--harmony-danger);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px;
+            text-align: center;
+            background-color: var(--harmony-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: bold;
+            transition: all 0.25s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn.active {
+            box-shadow: 0 0 0 3px rgba(0, 125, 255, 0.2);
+        }
+
+        .btn-warning {
+            background-color: var(--harmony-warning);
+        }
+
+        .btn-danger {
+            background-color: var(--harmony-danger);
+        }
+
+        .btn-secondary {
+            background-color: var(--harmony-success);
+        }
+
+        .tomato-clock {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .clock-display {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin: 16px 0;
+            color: var(--harmony-dark);
+        }
+
+        .clock-progress {
+            height: 12px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--harmony-primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--harmony-success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transform: translateX(150%);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: var(--harmony-danger);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
     </style>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -276,9 +464,9 @@ void handleAngle()
 // 初始化Web服务器
 void initWebServer()
 {
-    // 设置内置LED控制
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    // // 设置内置LED控制
+    // pinMode(LED_BUILTIN, OUTPUT);
+    // digitalWrite(LED_BUILTIN, HIGH);
 
     // 启动AP模式
     WiFi.softAP(AP_SSID, AP_PASSWORD);
