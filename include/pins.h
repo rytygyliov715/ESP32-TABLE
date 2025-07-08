@@ -32,3 +32,5 @@
 // ===== SG90 舵机 =====
 #define SERVO1_PIN 35 // PWM输出
 #define SERVO2_PIN 36 // PWM输出
+
+// ESP32-S3板载RGB LED

@@ -356,26 +356,6 @@ void handleRoot()
     server.send(200, "text/html", html);
 }
 
-// LED控制处理函数
-void handleLED()
-{
-    String state = server.arg("state");
-    if (state == "on")
-    {
-        digitalWrite(LED_BUILTIN, LOW);
-        server.send(200, "text/plain", "LED已开启");
-    }
-    else if (state == "off")
-    {
-        digitalWrite(LED_BUILTIN, HIGH);
-        server.send(200, "text/plain", "LED已关闭");
-    }
-    else
-    {
-        server.send(400, "text/plain", "无效请求");
-    }
-}
-
 // 重启设备处理函数
 void handleRestart()
 {
@@ -464,9 +444,6 @@ void handleAngle()
 // 初始化Web服务器
 void initWebServer()
 {
-    // // 设置内置LED控制
-    // pinMode(LED_BUILTIN, OUTPUT);
-    // digitalWrite(LED_BUILTIN, HIGH);
 
     // 启动AP模式
     WiFi.softAP(AP_SSID, AP_PASSWORD);
